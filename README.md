@@ -1,15 +1,15 @@
-Docker Flatrack
-===============
+Docker Envoy
+============
 
-Docker provides a way of running applications in an isolated and dependable environment. Flatrack takes this isolation a step further and helps you run your docker image builds and tests in isolation as well.
+Docker provides a way of running applications in an isolated and dependable environment. Envoy takes this isolation a step further and helps you run your docker image builds and tests in isolation as well.
 
 This can be helpful for when the environment building your images is not under your control and your build step has dependencies as well (ie - JDK). This uses docker at build time to help create
 
-For example with flatrack lets say you need the whole JDK to build your image, but your only the JRE to run it. Flatrack allows you to define a JDK image that is used in an intermediate step to build that final runnable JRE image.
+For example with envoy lets say you need the whole JDK to build your image, but your only the JRE to run it. Envoy allows you to define a JDK image that is used in an intermediate step to build that final runnable JRE image.
 
 It does the same for testing, by allowing you to pull whatever test libraries you need into a container and run those tests there instead of polluting the host.
 
-Additionally Flatrack is most helpful for managing a group of projects instead of a single one. It follows a structural project layout....
+Additionally Envoy is most helpful for managing a group of projects instead of a single one. It follows a structural project layout....
 
 Requirements
 ------------
@@ -25,17 +25,17 @@ Installation
 
 Lets presume you have a directory with your dockerfiles projects in /path/to/dockerfiles
 
-Configure your project to use flatrack
+Configure your project to use envoy
 
-    cd /path/to/flatrack
-    cp flatrack-config.sample.sh /path/to/dockerfiles/flatrack-config.sh
+    cd /path/to/envoy
+    cp envoy-config.sample.sh /path/to/dockerfiles/envoy-config.sh
     cp fr /path/to/dockerfiles/fr
 
-Edit your flatrack-config.sh if you need to. Now you should be able to execute the fr script in your project.
+Edit your envoy-config.sh if you need to. Now you should be able to execute the fr script in your project.
 
-In the config you should set GIT_REMOTE_BASE and FLATRACK. If you dont want to set is there, you can set an environment variable FLATRACK to the absolute path of this directory. For example you can put this in your .bashrc
+In the config you should set GIT_REMOTE_BASE and ENVOY. If you dont want to set is there, you can set an environment variable ENVOY to the absolute path of this directory. For example you can put this in your .bashrc
 
-    export FLATRACK=/path/to/flatrack
+    export ENVOY=/path/to/envoy
 
 
 Use

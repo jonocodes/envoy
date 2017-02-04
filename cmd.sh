@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# script contains a function for command line operation of controlling flatrack. it should not be called directly.
+# script contains a function for command line operation of controlling envoy. it should not be called directly.
 
 # set -x
 
@@ -111,8 +111,8 @@ function cmd {
     echo Running tests/$TEST.sh against $COMPOSE_FILE
 
     # build test runner images if they do not exist
-    docker images testrunner | grep -q flatrack || \
-      docker build . --file $FLATRACK/testrunner.dockerfile --tag testrunner:flatrack || exit 2
+    docker images testrunner | grep -q envoy || \
+      docker build . --file $ENVOY/testrunner.dockerfile --tag testrunner:envoy || exit 2
 
     # TODO: change 'custom' to something like 'plos' so we can have more then one of these on a system
     docker images testrunner | grep -q custom || \
@@ -129,14 +129,14 @@ function cmd {
 
     # TODO: is there a way to run this in the foreground perhaps so we can ^C out of it? as of now, that does not work.
     # run_the test in the container
-    # docker-compose -f $CONFIGURATIONS/common.yml run --rm $TEST_IMAGE sh -c "source /flatrack/test-helpers.sh && bash /tests/$TEST.sh"
+    # docker-compose -f $CONFIGURATIONS/common.yml run --rm $TEST_IMAGE sh -c "source /envoy/test-helpers.sh && bash /tests/$TEST.sh"
 
-    # TODO: pass in env of TESTHELPERS as /flatrack/test-helpers.sh
+    # TODO: pass in env of TESTHELPERS as /envoy/test-helpers.sh
 
     docker-compose -f $CONFIGURATIONS/common.yml run --rm testrunner bash /dockerfiles/tests/$TEST.sh
 
     # TODO: get this working so we can move it out of common.yml
-    # docker run --rm --network=configurations -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $FLATRACK:/flatrack:ro testrunner bash /dockerfiles/tests/$TEST.sh
+    # docker run --rm --network=configurations -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $ENVOY:/envoy:ro testrunner bash /dockerfiles/tests/$TEST.sh
 
     EXIT_CODE=$?
 

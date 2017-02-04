@@ -43,7 +43,7 @@ function compile_prepare {
 
   # bring in the supporting dockerfiles scripts needed for run time
   cp /scripts/* $BUILDDIR
-  cp /flatrack/run-helpers.sh $BUILDDIR
+  cp /envoy/run-helpers.sh $BUILDDIR
 
   pwd
   du -sh

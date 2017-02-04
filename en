@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# this is the command line interface to envoy. it should be coppied and executed from your dockerfiles directory.
+
+cd $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export DOCKERFILES=$(pwd)
+source envoy-config.sh
+
+source $ENVOY/cmd.sh
+
+cmd $@

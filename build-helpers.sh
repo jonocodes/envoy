@@ -6,9 +6,9 @@
 
 # TODO: make these build methods more DRY
 
-# FLATRACK=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+# ENVOY=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# DOCKERFILES=$FLATRACK/.. # HACK
+# DOCKERFILES=$ENVOY/.. # HACK
 
 # utility function for failing with a messsage
 function die() {
@@ -161,7 +161,7 @@ function build_image_compiled() {
     --volume $BUILD_RESULT_DIR:/build \
     --volume $PROJECT_LOCAL_REPO:/src \
     --volume $DOCKER_SETUP_DIR:/scripts \
-	  --volume $FLATRACK:/flatrack \
+	  --volume $ENVOY:/envoy \
 	  $BASE_IMAGE bash /scripts/compile.sh || die "compile failed"
 
 	echo "Building runnable docker image ..."
@@ -219,9 +219,9 @@ function build_rails_passenger_image() {
   rm $PROJECT_LOCAL_REPO/Dockerfile
 
   VERSION=$(docker run --volume $DOCKER_SETUP_DIR:/scripts \
-  						--volume $FLATRACK:/flatrack \
+  						--volume $ENVOY:/envoy \
   						--name $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG sh -c \
-  							'cp /flatrack/run-helpers.sh /scripts/* /root/;
+  							'cp /envoy/run-helpers.sh /scripts/* /root/;
   					     cat /root/version.txt || echo missing')
 
   docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG
@@ -285,9 +285,9 @@ function build_rails_ember_images() {
   rm $PROJECT_LOCAL_REPO/.dockerignore
 
   VERSION=$(docker run --volume $DOCKER_SETUP_DIR:/scripts \
-  						--volume $FLATRACK:/flatrack \
+  						--volume $ENVOY:/envoy \
   						--name $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG sh -c \
-  							'cp /flatrack/run-helpers.sh /scripts/* /root/;
+  							'cp /envoy/run-helpers.sh /scripts/* /root/;
   					     cat /root/version.txt')
 
   docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG

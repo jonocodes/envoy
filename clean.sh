@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# this is a utility script that is nice to have around for cleaning out old docker artifacts that might be lingering on a system. it is not flatrack specific
+# this is a utility script that is nice to have around for cleaning out old docker artifacts that might be lingering on a system. it is not envoy specific
 
 function delete_untagged_images {
   echo Deleting untagged images
