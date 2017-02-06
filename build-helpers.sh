@@ -27,7 +27,7 @@ function build_image {
 
 # given an array of images and tags, build them
 function build_images {
-  IMAGES=$1
+  IMAGES=${@}
 
   for IMAGE in $IMAGES; do
 

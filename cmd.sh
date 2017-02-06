@@ -71,6 +71,8 @@ function cmd {
       else
         IMAGES=$(get_images_from_config $CONFIGURATIONS/$NAME.yml)
 
+        echo Building images: $IMAGES
+
         build_images $IMAGES
       fi
     elif [ "$COMMAND" == "all" ]; then
