@@ -29,9 +29,9 @@ Configure your project to use envoy
 
     cd /path/to/envoy
     cp envoy-config.sample.sh /path/to/dockerfiles/envoy-config.sh
-    cp fr /path/to/dockerfiles/fr
+    cp nv /path/to/dockerfiles/nv
 
-Edit your envoy-config.sh if you need to. Now you should be able to execute the fr script in your project.
+Edit your envoy-config.sh if you need to. Now you should be able to execute the `nv` script in your project.
 
 In the config you should set GIT_REMOTE_BASE and ENVOY. If you dont want to set is there, you can set an environment variable ENVOY to the absolute path of this directory. For example you can put this in your .bashrc
 
@@ -41,7 +41,7 @@ In the config you should set GIT_REMOTE_BASE and ENVOY. If you dont want to set 
 Use
 ---
 
-After installation the `fr` script in your project can be used to build images, build a stack, test a stack, or control a stack. Run the `fr` script for a list of options.
+After installation the `nv` script in your project can be used to build images, build a stack, test a stack, or control a stack. Run the `nv` script for a list of options.
 
 
 Sample
