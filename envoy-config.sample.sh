@@ -12,6 +12,9 @@ export TESTS=$DOCKERFILES/tests
 
 export CONFIGURATIONS=$DOCKERFILES/configurations
 
+# set to "<organization>/" if using dockerhub, or if using a private repository specify the host and port here - ie: "myregistryhost:5000/". If not pushing images, leave blank.
+export IMAGE_PREFIX=
+
 [[ -n $ENVOY ]] || {
   echo "Error: ENVOY environment variable not set.";
   echo "Please set set it to the path of the envoy scripts directory.";

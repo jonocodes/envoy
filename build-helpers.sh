@@ -29,7 +29,9 @@ function build_image {
 function build_images {
   IMAGES=${@}
 
-  for IMAGE in $IMAGES; do
+  for FULL_IMAGE_NAME in $IMAGES; do
+
+    IMAGE=${FULL_IMAGE_NAME#$IMAGE_PREFIX}
 
     PROJECT=$(echo $IMAGE | cut -d':' -f1)
 
@@ -39,7 +41,7 @@ function build_images {
 
       build_image $PROJECT
 
-      docker inspect $IMAGE > /dev/null
+      docker inspect $FULL_IMAGE_NAME > /dev/null
       if [ $? -ne 0 ]; then
         echo "Error: Image $IMAGE does not exist. Perhaps you have the wrong branch of the project checked out."
         exit 1;
@@ -97,7 +99,7 @@ function check_local_src {
 }
 
 # since the builder image builds the assets, we need a way to copy from the builder to the final resulting image. this method performs the pipe that sends the data from the builder to the runner
-_builder_to_runner() {
+function _builder_to_runner() {
 
   BUILD_VOLUME=$1
   BUILD_IMAGE=$2
@@ -127,6 +129,10 @@ function build_image_compiled() {
   PROJECT_DIR=$1
   IMAGE_NAME=$2
 
+  # this would include the prefix if the image is to be stored remotely
+  FULL_IMAGE_NAME=${IMAGE_PREFIX}${2}
+
+  # the builder image to use, for example maven or ruby
   BASE_IMAGE=$3
   SHARED_CACHE_NAME=$4
   SHARED_CACHE_PATH=$5
@@ -165,14 +171,14 @@ function build_image_compiled() {
 	  $BASE_IMAGE bash /scripts/compile.sh || die "compile failed"
 
 	echo "Building runnable docker image ..."
-  _builder_to_runner $BUILD_RESULT_DIR $BASE_IMAGE "$IMAGE_NAME:$BASE_TAG"
+  _builder_to_runner $BUILD_RESULT_DIR $BASE_IMAGE "$FULL_IMAGE_NAME:$BASE_TAG"
 
 	# tag docker image with asset version number
 	VERSION=$(docker run --rm --volume $BUILD_RESULT_DIR:/build $BASE_IMAGE cat /build/version.txt)
 
-	echo "image tags = $IMAGE_NAME:$BASE_TAG and $IMAGE_NAME:$VERSION"
+	echo "image tags = $FULL_IMAGE_NAME:$BASE_TAG and $FULL_IMAGE_NAME:$VERSION"
 
-	docker tag $IMAGE_NAME:$BASE_TAG $IMAGE_NAME:$VERSION
+	docker tag $FULL_IMAGE_NAME:$BASE_TAG $FULL_IMAGE_NAME:$VERSION
 
   # clean up
   docker volume rm $BUILD_RESULT_DIR
@@ -185,7 +191,7 @@ function build_rails_passenger_image() {
 
 
   PROJECT_DIR=$1
-  IMAGE_NAME=$2
+  IMAGE_NAME=${IMAGE_PREFIX}${2}
 
   PROJECT_NAME=$(basename $PROJECT_DIR)
 
@@ -239,7 +245,7 @@ function build_rails_passenger_image() {
 function build_rails_ember_images() {
 
   PROJECT_DIR=$1
-  IMAGE_NAME=$2
+  IMAGE_NAME=${IMAGE_PREFIX}${2}
 
   PROJECT_NAME=$(basename $PROJECT_DIR)
 
@@ -305,7 +311,7 @@ function build_rails_ember_images() {
 function build_image_non_compiled() {
 
 	PROJECT_DIR=$1
-	IMAGE_NAME=$2
+	IMAGE_NAME=${IMAGE_PREFIX}${2}
 
   DOCKER_SETUP_DIR=$PROJECTS/$IMAGE_NAME
   PROJECT_LOCAL_REPO=$(get_local_src_dir $PROJECT_DIR)
