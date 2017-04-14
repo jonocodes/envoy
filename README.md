@@ -22,6 +22,18 @@ Requirements
 
 Make sure Docker is configured to run [without sudo](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
 
+For example if you are using Ubuntu 16, these instructions might get you setup:
+
+	sudo apt-get update
+	sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+	sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+	sudo apt-get update
+	sudo apt-get install -y docker-engine git
+	sudo usermod -aG docker $(whoami)
+
+You will need to log out and back in as the same user to enable this change. Now, to see that docker is setup correctly:
+
+	docker run hello-world
 
 Installation
 ------------
