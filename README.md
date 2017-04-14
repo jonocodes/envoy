@@ -22,20 +22,26 @@ Requirements
 
 Make sure Docker is configured to run [without sudo](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
 
-For example if you are using Ubuntu 16, these instructions might get you setup:
+If you are using Ubuntu 16, these instructions should be all you need to get the above requirements setup:
 
+	sudo apt-get install \
+		apt-transport-https \
+		ca-certificates \
+		curl \
+		software-properties-common
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	sudo add-apt-repository \
+		"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+		$(lsb_release -cs) \
+		stable"
 	sudo apt-get update
-	sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-	sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
-	sudo apt-get update
-	sudo apt-get install -y docker-engine git
-	sudo usermod -aG docker $(whoami)
+	sudo apt-get install -y git docker-ce
 	sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" && sudo chmod +x /usr/local/bin/docker-compose
+	sudo usermod -aG docker $(whoami)
 
-You will need to log out and back in as the same user to enable this change. Now, to see that docker is setup correctly:
+Run `newgrp docker` or you will need to log out and back in as the same user to be added to the docker group. Now, see that Docker is setup correctly:
 
-	docker run hello-world
-	docker-compose version 
+	docker-compose version && docker run hello-world
 
 Installation
 ------------
