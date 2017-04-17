@@ -39,7 +39,7 @@ If you are using Ubuntu 16, these instructions should be all you need to get the
 	sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" && sudo chmod +x /usr/local/bin/docker-compose
 	sudo usermod -aG docker $(whoami)
 
-Run `newgrp docker` or you will need to log out and back in as the same user to be added to the docker group. Now, see that Docker is setup correctly:
+Log out of your session and back in as the same user in order to be added to the docker group. Alternatively you can run `newgrp docker` without logging out but this will only affect the terminal you using, and not your whole session so other terminals will not be able to run docker commands. Now, see that Docker is setup correctly:
 
 	docker-compose version && docker run hello-world
 
