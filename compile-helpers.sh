@@ -45,7 +45,7 @@ function compile_prepare {
   cp /scripts/* $BUILDDIR
   cp /envoy/run-helpers.sh $BUILDDIR
 
-  pwd
+  # pwd
   # du -sh
   # ls -la
 }
