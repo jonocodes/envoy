@@ -243,6 +243,8 @@ function build_rails_passenger_image() {
 
 function build_rails_ember_images() {
 
+  # previously used to build Akita before I seperated the builder into its own container
+
   PROJECT_DIR=$1
   IMAGE_NAME=${IMAGE_PREFIX}${2}
 
