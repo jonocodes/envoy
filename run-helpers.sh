@@ -24,7 +24,16 @@ function require_mysql_envs {
   require_envs MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_USER_PASSWORD MYSQL_HOSTNAME MYSQL_DATABASE
 }
 
+
+# TODO: depricate in favor of start_tomcat.sh
 function start_tomcat {
+
+  # hack to prevent port conflicts when using host networking mode
+
+  [[ -n $TOMCAT_HTTP_PORT ]] && sed -i -e 's/8080/$TOMCAT_HTTP_PORT/g' $CATALINA_HOME/conf/server.xml
+
+  [[ -n $TOMCAT_CONTROL_PORT ]] && sed -i -e 's/8005/$TOMCAT_CONTROL_PORT/g' $CATALINA_HOME/conf/server.xml
+
 	${CATALINA_HOME}/bin/catalina.sh run
 }
 
