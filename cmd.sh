@@ -129,20 +129,74 @@ function cmd {
     $COMPOSE up -d
     $COMPOSE logs --no-color > $TESTS/lasttest.log &
 
-    # TODO: is there a way to run this in the foreground perhaps so we can ^C out of it? as of now, that does not work.
-    # run_the test in the container
-    # docker-compose -f $CONFIGURATIONS/common.yml run --rm $TEST_IMAGE sh -c "source /envoy/test-helpers.sh && bash /tests/$TEST.sh"
-
     # TODO: pass in env of TESTHELPERS as /envoy/test-helpers.sh
 
-    docker-compose -f $CONFIGURATIONS/common.yml run --rm testrunner bash /dockerfiles/tests/$TEST.sh
+    # docker-compose -f $CONFIGURATIONS/common.yml run --rm testrunner bash /dockerfiles/tests/$TEST.sh
 
-    # TODO: get this working so we can move it out of common.yml
-    # docker run --rm --network=configurations -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $ENVOY:/envoy:ro testrunner bash /dockerfiles/tests/$TEST.sh
+    docker run --rm --network=configurations_default -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $ENVOY:/envoy:ro testrunner:custom bash /dockerfiles/tests/$TEST.sh
 
     EXIT_CODE=$?
 
     [ $EXIT_CODE -eq 0 ] && echo "ALL TESTS PASSED"
+
+    echo EXIT CODE : $EXIT_CODE
+
+    # stop stack
+    $COMPOSE kill
+    $COMPOSE rm -f -v
+
+    # preserve the exit code of the container test
+    exit $EXIT_CODE
+
+  elif [[ "$OPERATION" == "testpy" ]]; then
+
+    if [ "$#" -eq 0 ]; then
+      echo "Use: $SCRIPT test TESTNAME [stack]"
+      echo
+      echo "If you dont specify a stack, it will default to be the same as testname."
+      echo
+      echo TESTS:
+      echo "$(find $TESTS -name "*.sh" ! -name "test-helpers.sh" ! -name "run.sh" -exec basename -s .sh -a {} +)"
+      exit 1
+    fi
+
+    TEST=$1
+    STACK=$1
+
+    if [[ -n $2 ]]; then
+      STACK=$2
+    fi
+
+    COMPOSE_FILE=$CONFIGURATIONS/$STACK.yml
+
+    COMPOSE="docker-compose -f $COMPOSE_FILE"
+
+    # TEST_IMAGE=testrunner
+
+    echo Running tests/$TEST.sh against $COMPOSE_FILE
+
+    # build test runner images if they do not exist
+    docker images testrunner | grep -q envoy || \
+      docker build . --file $ENVOY/testrunner.dockerfile --tag testrunner:envoy || exit 2
+
+    # TODO: change 'custom' to something like 'plos' so we can have more then one of these on a system
+    docker images testrunner | grep -q custom || \
+      docker build $TESTS --tag testrunner:custom || exit 3
+
+
+    # kill the lingering instances and state
+    $COMPOSE kill
+    $COMPOSE rm -f -v
+
+    # start stack
+    $COMPOSE up -d
+    $COMPOSE logs --no-color > $TESTS/lasttest.log &
+
+    docker run --rm --network=configurations_default -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $ENVOY:/envoy:ro testrunner:custom python /dockerfiles/tests/$TEST.py -v
+
+    EXIT_CODE=$?
+
+    # [ $EXIT_CODE -eq 0 ] && echo "ALL TESTS PASSED"
 
     echo EXIT CODE : $EXIT_CODE
 
