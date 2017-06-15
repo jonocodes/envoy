@@ -108,21 +108,6 @@ function _builder_to_runner() {
   docker run --rm --volume $BUILD_VOLUME:/build $BUILD_IMAGE sh -c 'tar -czf - -C /build .' | docker build -t $RUN_IMAGE - || die "build failed"
 }
 
-
-#  build a docker image using maven
-function build_image_maven() {
-
-  PROJECT_DIR=$1
-  IMAGE_NAME=$2
-
-  # most of the depend on a base image so make sure it exists
-  build_image tomcat
-
-  build_image_compiled \
-      $PROJECT_DIR $IMAGE_NAME \
-      maven:3-jdk-8-alpine maven_local_repo /root/.m2
-}
-
 # This function is used to build docker images that use an intermediate builder image and uses a library cache
 function build_image_compiled() {
 
@@ -184,6 +169,20 @@ function build_image_compiled() {
   docker volume rm $BUILD_RESULT_DIR
 }
 
+# Build a docker image using maven
+function build_image_maven() {
+
+  PROJECT_DIR=$1
+  IMAGE_NAME=$2
+
+  # most of the depend on a base image so make sure it exists
+  build_image tomcat
+
+  build_image_compiled \
+      $PROJECT_DIR $IMAGE_NAME \
+      maven:3-jdk-8-alpine maven_local_repo /root/.m2
+}
+
 function build_rails_passenger_image() {
 
 
@@ -243,6 +242,8 @@ function build_rails_passenger_image() {
 }
 
 function build_rails_ember_images() {
+
+  # previously used to build Akita before I seperated the builder into its own container
 
   PROJECT_DIR=$1
   IMAGE_NAME=${IMAGE_PREFIX}${2}

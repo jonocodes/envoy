@@ -32,7 +32,7 @@ function compile_prepare {
 
   rm -rf $BUILDDIR/*
 
-  echo Compiling
+  echo Compiling project
 
   cd /src
   mkdir /root/src
@@ -45,8 +45,8 @@ function compile_prepare {
   cp /scripts/* $BUILDDIR
   cp /envoy/run-helpers.sh $BUILDDIR
 
-  pwd
-  du -sh
+  # pwd
+  # du -sh
   # ls -la
 }
 

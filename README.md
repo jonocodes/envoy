@@ -24,15 +24,11 @@ Make sure Docker is configured to run [without sudo](https://docs.docker.com/eng
 
 If you are using Ubuntu 16, these instructions should be all you need to get the above requirements setup:
 
-	sudo apt-get install \
-		apt-transport-https \
-		ca-certificates \
-		curl \
-		software-properties-common
+	sudo apt install apt-transport-https ca-certificates curl software-properties-common
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 	sudo apt update
-	sudo apt-get install -y git docker-ce
+	sudo apt install -y git docker-ce
 	sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" && sudo chmod +x /usr/local/bin/docker-compose
 	sudo usermod -aG docker $(whoami)
 
