@@ -85,7 +85,7 @@ function cmd {
       echo $USAGE
     fi
 
-  elif [[ "$OPERATION" == "testbash" ]]; then
+  elif [[ "$OPERATION" == "test" ]]; then
 
     if [ "$#" -eq 0 ]; then
       echo "Use: $SCRIPT test TESTNAME [stack]"
