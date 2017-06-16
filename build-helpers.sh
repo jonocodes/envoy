@@ -176,7 +176,7 @@ function build_image_maven() {
   IMAGE_NAME=$2
 
   # most of the depend on a base image so make sure it exists
-  build_image tomcat
+  build_image tomcat7
 
   build_image_compiled \
       $PROJECT_DIR $IMAGE_NAME \
