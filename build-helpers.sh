@@ -190,7 +190,10 @@ function build_rails_passenger_image() {
 
 
   PROJECT_DIR=$1
-  IMAGE_NAME=${IMAGE_PREFIX}${2}
+  IMAGE_NAME=$2
+
+  # this would include the prefix if the image is to be stored remotely
+  FULL_IMAGE_NAME=${IMAGE_PREFIX}${2}
 
   PROJECT_NAME=$(basename $PROJECT_DIR)
 
@@ -198,11 +201,9 @@ function build_rails_passenger_image() {
 
   BASE_TAG=current
 
-  # TODO: use $DOCKERFILES instead
-  DOCKER_SETUP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$PROJECT_NAME
+  DOCKER_SETUP_DIR=$PROJECTS/$IMAGE_NAME
 
-  # perhaps they supplied an absolute path to an existing project directory
-  PROJECT_LOCAL_REPO=$DOCKER_SETUP_DIR/../../../${PROJECT_DIR}/
+  PROJECT_LOCAL_REPO=$(get_local_src_dir $PROJECT_DIR)
 
   if [[ ${PROJECT_DIR} == \/* ]]; then
     PROJECT_LOCAL_REPO=${PROJECT_DIR}/
@@ -219,23 +220,23 @@ function build_rails_passenger_image() {
   # BASE_TAG=$(git rev-parse --abbrev-ref HEAD|sed -e 's/[^a-zA-Z0-9_.]/_/g')
   BASE_TAG=$(get_git_branch $PROJECT_LOCAL_REPO)
 
-  time docker build -t $IMAGE_NAME:$BASE_TAG .
+  time docker build -t $FULL_IMAGE_NAME:$BASE_TAG .
   # cd $DOCKER_SETUP_DIR
   rm $PROJECT_LOCAL_REPO/Dockerfile
 
   VERSION=$(docker run --volume $DOCKER_SETUP_DIR:/scripts \
   						--volume $ENVOY:/envoy \
-  						--name $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG sh -c \
-  							'cp /envoy/run-helpers.sh /scripts/* /root/;
+  						--name $TMP_BUILD_CONTAINER $FULL_IMAGE_NAME:$BASE_TAG sh -c \
+  							'cp /envoy/run-helpers.sh /scripts/* /root/ &&
   					     cat /root/version.txt || echo missing')
 
-  docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG
+  docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $FULL_IMAGE_NAME:$BASE_TAG
 
   # tag docker image with asset version number
 
   # if [ "$VERSION" != "missing" ]; then
     echo tagging container with version : $VERSION
-    docker tag $IMAGE_NAME:$BASE_TAG $IMAGE_NAME:$VERSION
+    docker tag $FULL_IMAGE_NAME:$BASE_TAG $FULL_IMAGE_NAME:$VERSION
   # fi
 
   docker rm $TMP_BUILD_CONTAINER
@@ -246,7 +247,10 @@ function build_rails_ember_images() {
   # previously used to build Akita before I seperated the builder into its own container
 
   PROJECT_DIR=$1
-  IMAGE_NAME=${IMAGE_PREFIX}${2}
+  IMAGE_NAME=$2
+
+  # this would include the prefix if the image is to be stored remotely
+  FULL_IMAGE_NAME=${IMAGE_PREFIX}${2}
 
   PROJECT_NAME=$(basename $PROJECT_DIR)
 
@@ -254,10 +258,9 @@ function build_rails_ember_images() {
 
   BASE_TAG=current
 
-  # TODO: use $DOCKERFILES instead
-  DOCKER_SETUP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$IMAGE_NAME
+  DOCKER_SETUP_DIR=$PROJECTS/$IMAGE_NAME
 
-  PROJECT_LOCAL_REPO=$DOCKER_SETUP_DIR/../../../${PROJECT_DIR}/
+  PROJECT_LOCAL_REPO=$(get_local_src_dir $PROJECT_DIR)
 
   if [[ ${PROJECT_DIR} == \/* ]]; then
     PROJECT_LOCAL_REPO=${PROJECT_DIR}/
@@ -286,24 +289,24 @@ function build_rails_ember_images() {
   # BASE_TAG=$(git rev-parse --abbrev-ref HEAD|sed -e 's/[^a-zA-Z0-9_.]/_/g')
   BASE_TAG=$(get_git_branch $PROJECT_LOCAL_REPO)
 
-  time docker build -t $IMAGE_NAME:$BASE_TAG .
+  time docker build -t $FULL_IMAGE_NAME:$BASE_TAG .
   # cd $DOCKER_SETUP_DIR
   rm $PROJECT_LOCAL_REPO/Dockerfile
   rm $PROJECT_LOCAL_REPO/.dockerignore
 
   VERSION=$(docker run --volume $DOCKER_SETUP_DIR:/scripts \
   						--volume $ENVOY:/envoy \
-  						--name $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG sh -c \
+  						--name $TMP_BUILD_CONTAINER $FULL_IMAGE_NAME:$BASE_TAG sh -c \
   							'cp /envoy/run-helpers.sh /scripts/* /root/;
   					     cat /root/version.txt')
 
-  docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $IMAGE_NAME:$BASE_TAG
+  docker commit --change "CMD bash /root/run.sh" $TMP_BUILD_CONTAINER $FULL_IMAGE_NAME:$BASE_TAG
 
   # tag docker image with asset version number
 
   echo tagging container with version : $VERSION
 
-  docker tag $IMAGE_NAME:$BASE_TAG $IMAGE_NAME:$VERSION
+  docker tag $FULL_IMAGE_NAME:$BASE_TAG $FULL_IMAGE_NAME:$VERSION
 
   docker rm $TMP_BUILD_CONTAINER
 }
