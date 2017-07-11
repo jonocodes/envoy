@@ -7,9 +7,14 @@ source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../build-helpers.sh
 PROJECT_DIR=$1
 IMAGE_NAME=$2
 
+# has yarn and bash
 build_image_compiled \
     $PROJECT_DIR $IMAGE_NAME \
-    nodesource/trusty:6 dummy_repo /tmp/dummy
+    node:6 dummy_repo /tmp/dummy
+
+# build_image_compiled \
+#     $PROJECT_DIR $IMAGE_NAME \
+#     nodesource/trusty:6 dummy_repo /tmp/dummy
 
 # build_image_compiled \
 #     $PROJECT_DIR $IMAGE_NAME \
