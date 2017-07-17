@@ -314,7 +314,17 @@ function cmd {
     # $COMPOSE up -d
     # $COMPOSE logs --no-color > $TESTS/lasttest.log &
 
-    docker run --rm --network=configurations_default -v $DOCKERFILES:/dockerfiles:ro -v /var/run/docker.sock:/var/run/docker.sock -v $ENVOY:/envoy:ro testrunner:custom pytest -p no:cacheprovider --capture=no /dockerfiles/tests/${TEST}_contained.py -v
+    echo $DOCKERFILES
+
+    docker run --rm --network=configurations_default \
+      -v $DOCKERFILES:/dockerfiles:ro \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v $ENVOY:/envoy:ro testrunner:custom \
+      # head /dockerfiles/tests/${TEST}_contained.py
+      # -e "DOCKERFILES88:$DOCKERFILES" \
+     pytest -p no:cacheprovider --capture=no /dockerfiles/tests/${TEST}_contained.py -v
+      # ls -l /projects
+      # hostname
 
     EXIT_CODE=$?
 
