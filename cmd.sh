@@ -298,11 +298,11 @@ function cmd {
     echo Running tests/$TEST.sh against $COMPOSE_FILE
 
     # build test runner images if they do not exist
-    docker images testrunner | grep -q envoy || \
+    # docker images testrunner | grep -q envoy || \
       docker build . --file $ENVOY/testrunner.dockerfile --tag testrunner:envoy || exit 2
 
     # TODO: change 'custom' to something like 'plos' so we can have more then one of these on a system
-    docker images testrunner | grep -q custom || \
+    # docker images testrunner | grep -q custom || \
       docker build $TESTS --tag testrunner:custom || exit 3
 
 
