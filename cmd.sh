@@ -93,7 +93,7 @@ function cmd {
       echo "If you dont specify a stack, it will default to be the same as testname."
       echo
       echo TESTS:
-      echo "$(find $TESTS -name "*.py" ! -name "test-helper.py" ! -name "run.sh" -exec basename -s .py -a {} +)"
+      echo "$(find $TESTS -name "*.py" -exec basename -s .py -a {} +)"
       exit 1
     fi
 
@@ -110,16 +110,24 @@ function cmd {
 
     echo Running tests/$TEST.py against $COMPOSE_FILE
 
+    cd $ENVOY
     # build test runner images if they do not exist
     # docker images testrunner | grep -q envoy || \
-      docker build . --file $ENVOY/testrunner.dockerfile --tag testrunner:envoy || exit 2
+      docker build . --file testrunner.dockerfile --tag testrunner:envoy || exit 2
 
+    cd -
+
+    cd $TESTS
     # TODO: change 'custom' to something like 'plos' so we can have more then one of these on a system
     # docker images testrunner | grep -q custom || \
-      docker build $TESTS --tag testrunner:custom || exit 3
+      docker build . --tag testrunner:custom || exit 3
+
+    cd -
 
     docker run --rm --network=configurations_default \
       -e "DOCKERFILES=$DOCKERFILES" \
+      -e "CONFIGURATIONS=/dockerfiles/configurations" \
+      -e "PYTHONPATH=/envoy-test-helper" \
       -v $DOCKERFILES:/dockerfiles:ro \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v $ENVOY:/envoy:ro testrunner:custom \
@@ -127,9 +135,7 @@ function cmd {
 
     EXIT_CODE=$?
 
-    # [ $EXIT_CODE -eq 0 ] && echo "ALL TESTS PASSED"
-
-    echo EXIT CODE : $EXIT_CODE
+    # echo EXIT CODE : $EXIT_CODE
 
     # preserve the exit code of the container test
     exit $EXIT_CODE
