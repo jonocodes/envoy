@@ -88,9 +88,7 @@ function cmd {
   elif [[ "$OPERATION" == "test" ]]; then
 
     if [ "$#" -eq 0 ]; then
-      echo "Use: $SCRIPT test TESTNAME [stack]"
-      echo
-      echo "If you dont specify a stack, it will default to be the same as testname."
+      echo "Use: $SCRIPT test TESTNAME"
       echo
       echo TESTS:
       echo "$(find $TESTS -name "*.py" -exec basename -s .py -a {} +)"
@@ -104,24 +102,15 @@ function cmd {
       STACK=$2
     fi
 
-    COMPOSE_FILE=$CONFIGURATIONS/$STACK.yml
-
-    COMPOSE="docker-compose -f $COMPOSE_FILE"
-
-    echo Running tests/$TEST.py against $COMPOSE_FILE
+    echo Running tests/$TEST.py
 
     cd $ENVOY
-    # build test runner images if they do not exist
-    # docker images testrunner | grep -q envoy || \
-      docker build . --file testrunner.dockerfile --tag testrunner:envoy || exit 2
-
+    docker build . --file testrunner.dockerfile --tag testrunner:envoy || exit 2
     cd -
 
     cd $TESTS
     # TODO: change 'custom' to something like 'plos' so we can have more then one of these on a system
-    # docker images testrunner | grep -q custom || \
-      docker build . --tag testrunner:custom || exit 3
-
+    docker build . --tag testrunner:custom || exit 3
     cd -
 
     docker run --rm --network=configurations_default \
@@ -130,15 +119,11 @@ function cmd {
       -e "PYTHONPATH=/envoy-test-helper" \
       -v $DOCKERFILES:/dockerfiles:ro \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      -v $ENVOY:/envoy:ro testrunner:custom \
+      testrunner:custom \
       pytest -p no:cacheprovider --capture=no /dockerfiles/tests/${TEST}.py -v
 
-    EXIT_CODE=$?
-
-    # echo EXIT CODE : $EXIT_CODE
-
-    # preserve the exit code of the container test
-    exit $EXIT_CODE
+    # pass up the exit code to the caller
+    exit $?
 
   else
     echo $USAGE
