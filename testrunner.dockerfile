@@ -5,3 +5,5 @@ RUN apk update && apk add curl bash docker python3 && \
     mkdir /envoy-test-helper
 
 COPY test_helper.py /envoy-test-helper
+
+ENV PYTHONPATH=/envoy-test-helper

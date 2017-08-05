@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# script contains a function for command line operation of controlling envoy. it should not be called directly.
+# this script contains a function for command line operation of controlling envoy. it should not be called directly.
 
 # set -x
 
@@ -96,11 +96,6 @@ function cmd {
     fi
 
     TEST=$1
-    STACK=$1
-
-    if [[ -n $2 ]]; then
-      STACK=$2
-    fi
 
     echo Running tests/$TEST.py
 
@@ -116,7 +111,6 @@ function cmd {
     docker run --rm --network=configurations_default \
       -e "DOCKERFILES=$DOCKERFILES" \
       -e "CONFIGURATIONS=/dockerfiles/configurations" \
-      -e "PYTHONPATH=/envoy-test-helper" \
       -v $DOCKERFILES:/dockerfiles:ro \
       -v /var/run/docker.sock:/var/run/docker.sock \
       testrunner:custom \
